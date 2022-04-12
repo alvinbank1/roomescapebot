@@ -120,6 +120,13 @@ async def on_message(message):
         else:
             await message.delete()
             await message.author.send("<#960454707120312350>에선, `;?인증` 또는 `;?인증법` 명령어 이외엔 사용이 불가합니다.")
+    if message.channel.id == 850944602722926604 and message.author.id != 426537812993638400:
+        try:
+            await message.delete()
+        except:
+            return
+        finally:
+            await message.author.send("<#850944602722926604>에선, `/verify` 명령어 이외엔 사용이 불가합니다.")
 
     #modmail
     empty_array = []
