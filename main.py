@@ -46,6 +46,7 @@ async def on_message(message):
             Image_Captcha.write(a, name)
             await message.author.send(file=discord.File(name))
             await message.author.send("인증방법 : ;?인증 [코드]")
+            await message.channel.send(file=discord.File("howtoverify.mp4"))
             def check(msg):
                 return msg.author == message.author and msg.channel == message.channel
 
