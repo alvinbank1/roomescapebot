@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import discord, random, datetime, pytz
+import discord, random, datetime, pytz, os
 from discord import DMChannel
 from captcha.image import ImageCaptcha
 
@@ -149,4 +149,5 @@ async def on_message(message):
 
 
 
-client.run("OTYwMDk2MTE3ODQyOTIzNTUz.YkldMA.dGYm0nTXFVU6mrUL-PnxwpHFD8g")
+access_token = os.environ["BOT_TOKEN"]
+client.run(access_token)
