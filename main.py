@@ -85,7 +85,8 @@ async def on_message(message):
         if i is False:
             await message.channel.send("{}, 당신은 관리자가 아닙니다".format(message.author.mention))
     if message.content.startswith(";?인증법"):
-        await message.author.send("인증법은 아레 GIF를 참고해주세요. https://raw.githubusercontent.com/alvinbank1/roomescapebot/main/howtoverify.gif")
+        await message.author.send("인증법은 아레 GIF를 참고해주세요.")
+        await message.author.send("https://i.ibb.co/jMkTNgp/howtoverify.gif")
         await message.add_reaction("✅")
     if message.content.startswith(";?도배시작"):
         a = True
