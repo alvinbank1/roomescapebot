@@ -114,6 +114,14 @@ async def on_message(message):
         embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
         await message.author.send(embed=embed)
         await message.add_reaction("✅")
+    if message.channel.id == 960454707120312350:
+        if message.content == ";?인증법" or message.content.startswith(";?인증") or message.author == client.user:
+            return
+        else:
+            await message.delete()
+            await message.author.send("<#960454707120312350>에선, `;?인증` 또는 `;?인증법` 명령어 이외엔 사용이 불가합니다.")
+
+    #modmail
     empty_array = []
     modmail_channel = client.get_channel(961195825306951700)
     if message.channel.id == 961195825306951700:
