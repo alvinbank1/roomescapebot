@@ -45,8 +45,8 @@ async def on_message(message):
             name = str(message.author.id) + ".png"
             Image_Captcha.write(a, name)
             await message.author.send(file=discord.File(name))
-            await message.author.send("인증방법 : ;?인증 [코드]")
-            await message.channel.send(file=discord.File("howtoverify.mp4"))
+            await message.author.send("인증방법 : ;?인증법")
+            await message.channel.send("DM을 확인해주세요.")
             def check(msg):
                 return msg.author == message.author and msg.channel == message.channel
 
@@ -84,6 +84,9 @@ async def on_message(message):
 
         if i is False:
             await message.channel.send("{}, 당신은 관리자가 아닙니다".format(message.author.mention))
+    if message.content.startswith(";?인증법"):
+        await message.author.send("인증법은 아레 GIF를 참고해주세요.",file=discord.File("howtoverify.gif"))
+        await message.add_reaction("✅")
     if message.content.startswith(";?도배시작"):
         a = True
         await message.add_reaction("✅")
