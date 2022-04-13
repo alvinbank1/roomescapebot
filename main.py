@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import discord, random, datetime, pytz, os
+import discord, random, datetime, pytz, os, openpyxl
 from discord import DMChannel
 from captcha.image import ImageCaptcha
 
