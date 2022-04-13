@@ -60,6 +60,8 @@ async def on_message(message):
                 user = message.author
                 role = discord.utils.get(message.guild.roles, name='BotVerifyed')
                 await user.add_roles(role)
+                channel = client.get_channel(873088054825463828)
+                await channel.send("인증로그 : " + message.author.mention + "님이 인증함. 인증에 사용된 코드 : ||" + a + "||")
                 await message.add_reaction("✅")
                 await message.channel.send("인증이 완료되었습니다.✅ <#857501980834529292>로 가주세요!")
             else:
