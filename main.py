@@ -129,6 +129,79 @@ async def on_message(message):
             return
         finally:
             await message.author.send("<#850944602722926604>에선, `/verify` 명령어 이외엔 사용이 불가합니다.")
+    if message.content.startswith(";?경고"):
+        if message.author.guild_permissions.administrator == True:
+            author = await client.fetch_user(int(message.content[7:25]))
+            file = openpyxl.load_workbook("warning.xlsx")
+            sheet = file.active
+            i = 1
+            while True:
+                if sheet["A" + str(i)].value == str(message.content[7:25]):
+                    sheet["B" + str(i)].value = int(sheet["B" + str(i)].value) + 1
+                    file.save("warning.xlsx")
+                    if sheet["B" + str(i)].value > 2:
+                        try:
+                            await author.send("당신은 한국인이 만든 방탈출 서버에서 영구적으로 밴당하셨습니다. 사유 : 경고 총 누적 3회")
+                        except:
+                            try:
+                                await message.guild.ban(user=author)
+                            except:
+                                await message.channel.send(":x: 관리자를 밴할수 없습니다!")
+                            else:
+                                await message.channel.send("경고 3회 누적으로, <@" + str(message.content[7:25]) + "> 님이 영구 밴당하셨습니다.")
+                        else:
+                            try:
+                                await message.guild.ban(user=author)
+                            except:
+                                await message.channel.send(":x: 관리자를 밴할수 없습니다!")
+                            else:
+                                await message.channel.send("경고 3회 누적으로, <@" + str(message.content[7:25]) + "> 님이 영구 밴당하셨습니다.")
+                    else:
+                        await message.channel.send("<@" + str(message.content[7:25]) + "> 님이 " + message.author.mention + " 님에게 경고를 1개 받았습니다.")
+                    break
+                if sheet["A" + str(i)].value == None:
+                    sheet["A" + str(i)].value = str(message.content[7:25])
+                    sheet["B" + str(i)].value = 1
+                    file.save("warning.xlsx")
+                    await message.channel.send("<@" + str(message.content[7:25]) + "> 님이 " + message.author.mention + " 님에게 경고를 1개 받았습니다.")
+                    break
+                i += 1
+    if message.content.startswith(";?밴"):
+        author = await client.fetch_user(int(message.content[6:24]))
+        try:
+            await author.send("당신은 한국인이 만든 방탈출 서버에서 영구적으로 밴당하셨습니다. 사유 : 관리자에 의한 영구 밴")
+        except:
+            try:
+                await message.guild.ban(user=author)
+            except:
+                await message.channel.send(":x: 관리자를 밴할수 없습니다!")
+            else:
+                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 관리자에 의하여 영구 밴당하셨습니다.")
+        else:
+            try:
+                await message.guild.ban(user=author)
+            except:
+                await message.channel.send(":x: 관리자를 밴할수 없습니다!")
+            else:
+                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 관리자에 의하여 영구 밴당하셨습니다.")
+    if message.content.startswith(";?킥"):
+        author = await client.fetch_user(int(message.content[6:24]))
+        try:
+            await author.send("당신은 한국인이 만든 방탈출 서버에서 킥당하셨습니다. 사유 : 관리자에 의한 킥")
+        except:
+            try:
+                await message.guild.kick(user=author)
+            except:
+                await message.channel.send(":x: 관리자를 킥할수 없습니다!")
+            else:
+                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 관리자에 의하여 킥당하셨습니다.")
+        else:
+            try:
+                await message.guild.kick(user=author)
+            except:
+                await message.channel.send(":x: 관리자를 킥할수 없습니다!")
+            else:
+                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 관리자에 의하여 킥당하셨습니다.")
 
     #modmail
     empty_array = []
