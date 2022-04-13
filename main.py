@@ -176,14 +176,14 @@ async def on_message(message):
             except:
                 await message.channel.send(":x: 관리자를 밴할수 없습니다!")
             else:
-                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 관리자에 의하여 영구 밴당하셨습니다.")
+                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 영구 밴당하셨습니다.")
         else:
             try:
                 await message.guild.ban(user=author)
             except:
                 await message.channel.send(":x: 관리자를 밴할수 없습니다!")
             else:
-                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 관리자에 의하여 영구 밴당하셨습니다.")
+                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 영구 밴당하셨습니다.")
     if message.content.startswith(";?킥"):
         author = await client.fetch_user(int(message.content[6:24]))
         try:
@@ -194,14 +194,14 @@ async def on_message(message):
             except:
                 await message.channel.send(":x: 관리자를 킥할수 없습니다!")
             else:
-                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 관리자에 의하여 킥당하셨습니다.")
+                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 킥당하셨습니다.")
         else:
             try:
                 await message.guild.kick(user=author)
             except:
                 await message.channel.send(":x: 관리자를 킥할수 없습니다!")
             else:
-                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 관리자에 의하여 킥당하셨습니다.")
+                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 킥당하셨습니다.")
 
     #modmail
     empty_array = []
