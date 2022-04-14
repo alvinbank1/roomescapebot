@@ -16,7 +16,7 @@ async def on_ready():
     print(client.user.id)
     print("ready")
     game = discord.Game(";?도움")
-    await client.change_presence(activity=discord.Streaming(name=";?도움", url='https://www.twitch.tv/alvinbank1'))
+    await client.change_presence(activity=discord.Streaming(name=";?도움", url='https://discord.gg/R5Dm87MMZf'))
 
 @client.event
 async def on_message(message):
