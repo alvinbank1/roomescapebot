@@ -172,14 +172,14 @@ async def on_message(message):
             await author.send("당신은 한국인이 만든 방탈출 서버에서 영구적으로 밴당하셨습니다. 사유 : 관리자에 의한 영구 밴")
         except:
             try:
-                await message.guild.ban(user=author)
+                await message.guild.ban(user=author, reason=message.content[25:])
             except:
                 await message.channel.send(":x: 관리자를 밴할수 없습니다!")
             else:
                 await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 영구 밴당하셨습니다.")
         else:
             try:
-                await message.guild.ban(user=author)
+                await message.guild.ban(user=author, reason=message.content[25:])
             except:
                 await message.channel.send(":x: 관리자를 밴할수 없습니다!")
             else:
@@ -190,18 +190,19 @@ async def on_message(message):
             await author.send("당신은 한국인이 만든 방탈출 서버에서 킥당하셨습니다. 사유 : 관리자에 의한 킥")
         except:
             try:
-                await message.guild.kick(user=author)
+                await message.guild.kick(user=author, reason=message.content[25:])
             except:
                 await message.channel.send(":x: 관리자를 킥할수 없습니다!")
             else:
                 await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 킥당하셨습니다.")
         else:
             try:
-                await message.guild.kick(user=author)
+                await message.guild.kick(user=author, reason=message.content[25:])
             except:
                 await message.channel.send(":x: 관리자를 킥할수 없습니다!")
             else:
                 await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 킥당하셨습니다.")
+
 
     #modmail
     empty_array = []
