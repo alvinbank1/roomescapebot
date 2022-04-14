@@ -141,7 +141,7 @@ async def on_message(message):
                     file.save("warning.xlsx")
                     if sheet["B" + str(i)].value > 2:
                         try:
-                            await author.send("당신은 한국인이 만든 방탈출 서버에서 영구적으로 밴당하셨습니다. 사유 : 경고 총 누적 3회 \n 밴 취소 요청 : https://forms.gle/GUzhi5CAgf9FJDye6")
+                            await author.send("당신은 한국인이 만든 방탈출 서버에서 영구적으로 밴당하셨습니다. 사유 : 경고 총 누적 3회\n밴 취소 요청 : https://forms.gle/GUzhi5CAgf9FJDye6")
                         except:
                             try:
                                 await message.guild.ban(user=author)
@@ -169,7 +169,7 @@ async def on_message(message):
     if message.content.startswith(";?밴"):
         author = await client.fetch_user(int(message.content[6:24]))
         try:
-            await author.send("당신은 한국인이 만든 방탈출 서버에서 영구적으로 밴당하셨습니다. 사유 : 관리자에 의한 영구 밴 \n 밴 취소 요청 : https://forms.gle/GUzhi5CAgf9FJDye6")
+            await author.send("당신은 한국인이 만든 방탈출 서버에서 영구적으로 밴당하셨습니다. 사유 : 관리자에 의한 영구 밴\n밴 취소 요청 : https://forms.gle/GUzhi5CAgf9FJDye6")
         except:
             try:
                 await message.guild.ban(user=author, reason=message.content[25:])
@@ -202,7 +202,9 @@ async def on_message(message):
                 await message.channel.send(":x: 관리자를 킥할수 없습니다!")
             else:
                 await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 킥당하셨습니다.")
-
+    if message.content == "<@960096117842923553>":
+        await message.author.send(message.author.mention + "\nhttps://bit.ly/3jC2CmS")
+        await message.add_reaction("🎉")
 
     #modmail
     empty_array = []
