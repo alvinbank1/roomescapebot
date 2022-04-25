@@ -169,7 +169,7 @@ async def on_message(message):
     if message.content.startswith(";?밴"):
         author = await client.fetch_user(int(message.content[6:24]))
         try:
-            await author.send("당신은 한국인이 만든 방탈출 서버에서 영구적으로 밴당하셨습니다. 사유 : 관리자에 의한 영구 밴\n밴 취소 요청 : https://forms.gle/GUzhi5CAgf9FJDye6")
+            await author.send("당신은 한국인이 만든 방탈출 서버에서 영구적으로 밴당하셨습니다. 사유 : " + message.content[25:] + "\n밴 취소 요청 : https://forms.gle/GUzhi5CAgf9FJDye6")
         except:
             try:
                 await message.guild.ban(user=author, reason=message.content[25:])
@@ -187,7 +187,7 @@ async def on_message(message):
     if message.content.startswith(";?킥"):
         author = await client.fetch_user(int(message.content[6:24]))
         try:
-            await author.send("당신은 한국인이 만든 방탈출 서버에서 킥당하셨습니다. 사유 : 관리자에 의한 킥")
+            await author.send("당신은 한국인이 만든 방탈출 서버에서 킥당하셨습니다. 사유 : " + message.content[25:])
         except:
             try:
                 await message.guild.kick(user=author, reason=message.content[25:])
@@ -205,7 +205,17 @@ async def on_message(message):
     if message.content == "<@960096117842923553>":
         await message.author.send(message.author.mention + "\nhttps://bit.ly/3jC2CmS")
         await message.add_reaction("🎉")
-
+    if message.content.startswith(";?정보"):
+        date = datetime.datetime.utcfromtimestamp(((int(message.author.id) >> 22) + 1420070400000) / 1000)
+        embed = discord.Embed(title=message.author.name+"님의 정보", description=message.author.mention + "님의 정보입니다.", timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x00ff00)
+        embed.add_field(name="닉네임", value=message.author.name, inline=True)
+        embed.add_field(name="서버 닉네임", value=message.author.display_name, inline=True)
+        embed.add_field(name="가입일", value=str(date.year) + "년 " + str(date.month) + "월 " + str(date.day) + "일 " + str(date.hour) + "시 " + str(date.minute) + "분", inline=True)
+        embed.add_field(name="아이디", value=message.author.id)
+        embed.set_footer(text="Coder : alvinbank1#5412", icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
+        embed.set_thumbnail(url=message.author.avatar_url)
+        await message.author.send(embed=embed)
+        await message.add_reaction("✅")
     #modmail
     empty_array = []
     modmail_channel = client.get_channel(961195825306951700)
