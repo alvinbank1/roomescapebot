@@ -167,41 +167,47 @@ async def on_message(message):
                     break
                 i += 1
     if message.content.startswith(";?밴"):
-        author = await client.fetch_user(int(message.content[6:24]))
-        try:
-            await author.send("당신은 한국인이 만든 방탈출 서버에서 영구적으로 밴당하셨습니다. 사유 : " + message.content[25:] + "\n밴 취소 요청 : https://forms.gle/GUzhi5CAgf9FJDye6")
-        except:
+        if message.author.guild_permissions.administrator == True:
+            author = await client.fetch_user(int(message.content[6:24]))
             try:
-                await message.guild.ban(user=author, reason=message.content[25:])
+                await author.send("당신은 한국인이 만든 방탈출 서버에서 영구적으로 밴당하셨습니다. 사유 : " + message.content[25:] + "\n밴 취소 요청 : https://forms.gle/GUzhi5CAgf9FJDye6")
             except:
-                await message.channel.send(":x: 관리자를 밴할수 없습니다!")
+                try:
+                    await message.guild.ban(user=author, reason=message.content[25:])
+                except:
+                    await message.channel.send(":x: 관리자를 밴할수 없습니다!")
+                else:
+                    await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 영구 밴당하셨습니다.")
             else:
-                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 영구 밴당하셨습니다.")
+                try:
+                    await message.guild.ban(user=author, reason=message.content[25:])
+                except:
+                    await message.channel.send(":x: 관리자를 밴할수 없습니다!")
+                else:
+                    await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 영구 밴당하셨습니다.")
         else:
-            try:
-                await message.guild.ban(user=author, reason=message.content[25:])
-            except:
-                await message.channel.send(":x: 관리자를 밴할수 없습니다!")
-            else:
-                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 영구 밴당하셨습니다.")
+            await message.channel.send(":x: 당신은 관리자가 아닙니다!")
     if message.content.startswith(";?킥"):
-        author = await client.fetch_user(int(message.content[6:24]))
-        try:
-            await author.send("당신은 한국인이 만든 방탈출 서버에서 킥당하셨습니다. 사유 : " + message.content[25:])
-        except:
+        if message.author.guild_permissions.administrator == True:
+            author = await client.fetch_user(int(message.content[6:24]))
             try:
-                await message.guild.kick(user=author, reason=message.content[25:])
+                await author.send("당신은 한국인이 만든 방탈출 서버에서 킥당하셨습니다. 사유 : " + message.content[25:])
             except:
-                await message.channel.send(":x: 관리자를 킥할수 없습니다!")
+                try:
+                    await message.guild.kick(user=author, reason=message.content[25:])
+                except:
+                    await message.channel.send(":x: 관리자를 킥할수 없습니다!")
+                else:
+                    await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 킥당하셨습니다.")
             else:
-                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 킥당하셨습니다.")
+                try:
+                    await message.guild.kick(user=author, reason=message.content[25:])
+                except:
+                    await message.channel.send(":x: 관리자를 킥할수 없습니다!")
+                else:
+                    await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 킥당하셨습니다.")
         else:
-            try:
-                await message.guild.kick(user=author, reason=message.content[25:])
-            except:
-                await message.channel.send(":x: 관리자를 킥할수 없습니다!")
-            else:
-                await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 킥당하셨습니다.")
+            await message.channel.send(":x: 당신은 관리자가 아닙니다!")
     if message.content == "<@960096117842923553>":
         await message.author.send(message.author.mention + "\nhttps://bit.ly/3jC2CmS")
         await message.add_reaction("🎉")
