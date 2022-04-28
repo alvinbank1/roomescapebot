@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import discord, random, datetime, pytz, os, openpyxl
+import discord, random, datetime, pytz, openpyxl, asyncio
 from discord import DMChannel
 from captcha.image import ImageCaptcha
 
@@ -8,15 +8,26 @@ client = discord.Client()
 
 #Global에 필요한 변수
 code = random.randrange(10000, 99999)
-a = False
-# a는 도배변수
+a = False # 도배변수
+today = datetime.date.today() # 사용법 : today.year, today.month, today.day, today.weekday()
+
+async def bt(games):
+    await client.wait_until_ready()
+    while not client.is_closed():
+        for g in games:
+            await client.change_presence(activity=discord.Streaming(name=g, url='https://www.twitch.tv/alvinbank1'))
+            await asyncio.sleep(5)
 
 @client.event
 async def on_ready():
+    y = today.year
+    m = today.month
+    d = today.day
     print(client.user.id)
     print("ready")
     game = discord.Game(";?도움")
-    await client.change_presence(activity=discord.Streaming(name=";?도움", url='https://www.twitch.tv/alvinbank1'))
+    await bt([";?도움","DM = 문의","방탈출 서버 감시중 👀",str(y) + "년 " + str(m) + "월 " + str(d) + "일"])
+    #await client.change_presence(activity=discord.Streaming(name=";?도움", url='https://www.twitch.tv/alvinbank1'))
 
 @client.event
 async def on_message(message):
@@ -260,7 +271,6 @@ async def on_message(message):
             string = message.content
             mod_message = string[index:]
             await member_object.send("[" + str(message.author.id) + ", " + message.author.mention + " ||@here|| ]" + mod_message)
-
 
 
 access_token = os.environ["BOT_TOKEN"]
