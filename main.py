@@ -169,12 +169,14 @@ async def on_message(message):
                                 await message.channel.send("경고 3회 누적으로, <@" + str(message.content[7:25]) + "> 님이 영구 밴당하셨습니다.")
                     else:
                         await message.channel.send("<@" + str(message.content[7:25]) + "> 님이 " + message.author.mention + " 님에게 경고를 1개 받았습니다.")
+                        await author.send("당신은 한국인이 만든 방탈출 서버에서 경고 1개를 받았습니다.")
                     break
                 if sheet["A" + str(i)].value == None:
                     sheet["A" + str(i)].value = str(message.content[7:25])
                     sheet["B" + str(i)].value = 1
                     file.save("warning.xlsx")
                     await message.channel.send("<@" + str(message.content[7:25]) + "> 님이 " + message.author.mention + " 님에게 경고를 1개 받았습니다.")
+                    await author.send("당신은 한국인이 만든 방탈출 서버에서 경고 1개를 받았습니다.")
                     break
                 i += 1
     if message.content.startswith(";?밴"):
