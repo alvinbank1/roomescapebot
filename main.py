@@ -237,7 +237,7 @@ async def on_message(message):
         await message.add_reaction("✅")
     if message.content.startswith("http"):
         await message.delete()
-        await message.channel.send(";?경고 " + message.author.mention)
+        await message.author.send("당신이 방금 보낸 메세지가 삭제되었습니다. 사유 : 링크 사용")
     #modmail
     empty_array = []
     modmail_channel = client.get_channel(961195825306951700)
