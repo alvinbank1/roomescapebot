@@ -235,6 +235,9 @@ async def on_message(message):
         embed.set_thumbnail(url=message.author.avatar_url)
         await message.author.send(embed=embed)
         await message.add_reaction("✅")
+    if message.content.startswith("http"):
+        await message.delete()
+        await message.channel.send(";?경고 " + message.author.mention)
     #modmail
     empty_array = []
     modmail_channel = client.get_channel(961195825306951700)
