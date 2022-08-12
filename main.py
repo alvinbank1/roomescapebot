@@ -160,6 +160,13 @@ async def on_message(message):
                                 await message.channel.send(":x: 관리자를 밴할수 없습니다!")
                             else:
                                 await message.channel.send("경고 3회 누적으로, <@" + str(message.content[7:25]) + "> 님이 영구 밴당하셨습니다.")
+                                channel = client.get_channel(1007522175122669658)
+                                embed = discord.Embed(title=message.author.name + "님이 서버에서 영구적으로 밴당하셨습니다.",
+                                                      description=message.author.mention,
+                                                      timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                                                      color=0x00ff00)
+                                embed.add_field(name="사유", value="경고 총 누적 3회", inline=True)
+                                await channel.send(embed=embed)
                         else:
                             try:
                                 await message.guild.ban(user=author)
@@ -167,9 +174,21 @@ async def on_message(message):
                                 await message.channel.send(":x: 관리자를 밴할수 없습니다!")
                             else:
                                 await message.channel.send("경고 3회 누적으로, <@" + str(message.content[7:25]) + "> 님이 영구 밴당하셨습니다.")
+                                channel = client.get_channel(1007522175122669658)
+                                embed = discord.Embed(title=message.author.name + "님이 서버에서 영구적으로 밴당하셨습니다.",
+                                                      description=message.author.mention,
+                                                      timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                                                      color=0x00ff00)
+                                embed.add_field(name="사유", value="경고 총 누적 3회", inline=True)
+                                await channel.send(embed=embed)
                     else:
                         await message.channel.send("<@" + str(message.content[7:25]) + "> 님이 " + message.author.mention + " 님에게 경고를 1개 받았습니다.")
                         await author.send("당신은 한국인이 만든 방탈출 서버에서 경고 1개를 받았습니다.")
+                        channel = client.get_channel(1007522175122669658)
+                        embed = discord.Embed(title=message.author.name + "님이 경고를 1개 받았습니다.",
+                                              description=message.author.mention,
+                                              timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x00ff00)
+                        await channel.send(embed=embed)
                     break
                 if sheet["A" + str(i)].value == None:
                     sheet["A" + str(i)].value = str(message.content[7:25])
@@ -177,6 +196,11 @@ async def on_message(message):
                     file.save("warning.xlsx")
                     await message.channel.send("<@" + str(message.content[7:25]) + "> 님이 " + message.author.mention + " 님에게 경고를 1개 받았습니다.")
                     await author.send("당신은 한국인이 만든 방탈출 서버에서 경고 1개를 받았습니다.")
+                    channel = client.get_channel(1007522175122669658)
+                    embed = discord.Embed(title=message.author.name + "님이 경고를 1개 받았습니다.",
+                                          description=message.author.mention,
+                                          timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x00ff00)
+                    await channel.send(embed=embed)
                     break
                 i += 1
     if message.content.startswith(";?밴"):
@@ -191,6 +215,12 @@ async def on_message(message):
                     await message.channel.send(":x: 관리자를 밴할수 없습니다!")
                 else:
                     await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 영구 밴당하셨습니다.")
+                    channel = client.get_channel(1007522175122669658)
+                    embed = discord.Embed(title=message.author.name + "님이 서버에서 영구적으로 밴당하셨습니다.",
+                                          description=message.author.mention,
+                                          timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x00ff00)
+                    embed.add_field(name="사유", value=message.content[25:], inline=True)
+                    await channel.send(embed=embed)
             else:
                 try:
                     await message.guild.ban(user=author, reason=message.content[25:])
@@ -198,6 +228,12 @@ async def on_message(message):
                     await message.channel.send(":x: 관리자를 밴할수 없습니다!")
                 else:
                     await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 영구 밴당하셨습니다.")
+                    channel = client.get_channel(1007522175122669658)
+                    embed = discord.Embed(title=message.author.name + "님이 서버에서 영구적으로 밴당하셨습니다.",
+                                          description=message.author.mention,
+                                          timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x00ff00)
+                    embed.add_field(name="사유", value=message.content[25:], inline=True)
+                    await channel.send(embed=embed)
         else:
             await message.channel.send(":x: 당신은 관리자가 아닙니다!")
     if message.content.startswith(";?킥"):
@@ -212,6 +248,12 @@ async def on_message(message):
                     await message.channel.send(":x: 관리자를 킥할수 없습니다!")
                 else:
                     await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 킥당하셨습니다.")
+                    channel = client.get_channel(1007522175122669658)
+                    embed = discord.Embed(title=message.author.name + "님이 서버에서 영구적으로 밴당하셨습니다.",
+                                          description=message.author.mention,
+                                          timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x00ff00)
+                    embed.add_field(name="사유", value=message.content[25:], inline=True)
+                    await channel.send(embed=embed)
             else:
                 try:
                     await message.guild.kick(user=author, reason=message.content[25:])
@@ -219,6 +261,12 @@ async def on_message(message):
                     await message.channel.send(":x: 관리자를 킥할수 없습니다!")
                 else:
                     await message.channel.send("<@" + str(message.content[6:24]) + "> 님이 " + message.author.mention + "에 의하여 킥당하셨습니다.")
+                    channel = client.get_channel(1007522175122669658)
+                    embed = discord.Embed(title=message.author.name + "님이 서버에서 킥당하셨습니다.",
+                                          description=message.author.mention,
+                                          timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x00ff00)
+                    embed.add_field(name="사유", value=message.content[25:], inline=True)
+                    await channel.send(embed=embed)
         else:
             await message.channel.send(":x: 당신은 관리자가 아닙니다!")
     if message.content == "<@960096117842923553>":
@@ -233,9 +281,24 @@ async def on_message(message):
         embed.add_field(name="아이디", value=message.author.id)
         embed.set_footer(text="Coder : alvinbank1#5412", icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
         embed.set_thumbnail(url=message.author.avatar_url)
-        await message.author.send(embed=embed)
+        await message.author.send()
         await message.add_reaction("✅")
     if message.content.startswith("http"):
+        channel = client.get_channel(1007519970382589992)
+        embed = discord.Embed(title=message.author.name + "님이 방금 보낸 메세지가 삭제되었습니다.", description=message.author.mention,
+                              timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x00ff00)
+        embed.add_field(name="사유", value="링크 사용", inline=True)
+        embed.add_field(name="원본 메세지", value=message.content, inline=True)
+        await channel.send(embed=embed)
+        await message.delete()
+        await message.author.send("당신이 방금 보낸 메세지가 삭제되었습니다. 사유 : 링크 사용")
+    if message.content.startswith("www."):
+        channel = client.get_channel(1007519970382589992)
+        embed = discord.Embed(title=message.author.name + "님이 방금 보낸 메세지가 삭제되었습니다.", description=message.author.mention,
+                              timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x00ff00)
+        embed.add_field(name="사유", value="링크 사용", inline=True)
+        embed.add_field(name="원본 메세지", value=message.content, inline=True)
+        await channel.send(embed=embed)
         await message.delete()
         await message.author.send("당신이 방금 보낸 메세지가 삭제되었습니다. 사유 : 링크 사용")
     #modmail
