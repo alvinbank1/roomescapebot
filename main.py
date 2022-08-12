@@ -301,6 +301,24 @@ async def on_message(message):
         await channel.send(embed=embed)
         await message.delete()
         await message.author.send("당신이 방금 보낸 메세지가 삭제되었습니다. 사유 : 링크 사용")
+    if message.content.startswith("<@"):
+        channel = client.get_channel(1007519970382589992)
+        embed = discord.Embed(title=message.author.name + "님이 방금 보낸 메세지가 삭제되었습니다.", description=message.author.mention,
+                              timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x00ff00)
+        embed.add_field(name="사유", value="사용자 맨션", inline=True)
+        embed.add_field(name="원본 메세지", value=message.content, inline=True)
+        await channel.send(embed=embed)
+        await message.delete()
+        await message.author.send("당신이 방금 보낸 메세지가 삭제되었습니다. 사유 : 사용자 맨션")
+    if message.content.startswith("discord."):
+        channel = client.get_channel(1007519970382589992)
+        embed = discord.Embed(title=message.author.name + "님이 방금 보낸 메세지가 삭제되었습니다.", description=message.author.mention,
+                              timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x00ff00)
+        embed.add_field(name="사유", value="초대 링크 사용", inline=True)
+        embed.add_field(name="원본 메세지", value=message.content, inline=True)
+        await channel.send(embed=embed)
+        await message.delete()
+        await message.author.send("당신이 방금 보낸 메세지가 삭제되었습니다. 사유 : 초대 링크 사용")
     #modmail
     empty_array = []
     modmail_channel = client.get_channel(961195825306951700)
