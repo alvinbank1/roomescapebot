@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
 import discord, random, datetime, pytz, openpyxl, asyncio, os
 from discord import DMChannel
-from discord import app_commands,ui,utils
+#from discord import app_commands,ui,utils
 from captcha.image import ImageCaptcha
 
 #필수변수
 
-class aclient(discord.Client):
-    def __init__(self):
-        super().__init__(intents=discord.Intents.default())
-        self.synced = False #we use this so the bot doesn't sync commands more than once
+#class aclient(discord.Client):
+    #def __init__(self):
+        #super().__init__(intents=discord.Intents.default())
+        #self.synced = False #we use this so the bot doesn't sync commands more than once
 
-    async def on_ready(self):
-        await self.wait_until_ready()
-        if not self.synced: #check if slash commands have been synced
-            await tree.sync(guild = discord.Object(id=848128376643911700)) #guild specific: leave blank if global (global registration can take 1-24 hours)
-            self.synced = True
-        print(f"We have logged in as {self.user}.")
+    #async def on_ready(self):
+        #await self.wait_until_ready()
+        #if not self.synced: #check if slash commands have been synced
+            #await tree.sync(guild = discord.Object(id=848128376643911700)) #guild specific: leave blank if global (global registration can take 1-24 hours)
+            #self.synced = True
+        #print(f"We have logged in as {self.user}.")
 
-client = aclient()
-tree = app_commands.CommandTree(client)
-#client = discord.Client(intents=discord.Intents.default())
+#bclient = aclient()
+#tree = app_commands.CommandTree(bclient)
+client = discord.Client(intents=discord.Intents.default())
 
 #Global에 필요한 변수
 code = random.randrange(10000, 99999)
@@ -377,12 +377,12 @@ async def on_message(message):
             mod_message = string[index:]
             await member_object.send("[" + str(message.author.id) + ", " + message.author.mention + " ||@here|| ]" + mod_message)
 
-@tree.command(guild=discord.Object(id=848128376643911700),name="규칙",description="서버 규칙을 봅니다")
-async def slash(interaction: discord.Interaction):
-    embed = discord.Embed(title="한국인이 만든 방탈출 규칙", description="서버 규칙 : https://docs.google.com/document/d/1tAcK39XXV6YXDFlcEynNkOSWDvM2nD_OyHi0d1Hvkmo/edit?usp=sharing",
-                          timestamp=datetime.datetime.now(pytz.timezone('UTC')),
-                          color=0x00ff00)
-    await interaction.response.send_message(embed=embed)
+#@tree.command(guild=discord.Object(id=848128376643911700),name="규칙",description="서버 규칙을 봅니다")
+#async def slash(interaction: discord.Interaction):
+    #embed = discord.Embed(title="한국인이 만든 방탈출 규칙", description="서버 규칙 : https://docs.google.com/document/d/1tAcK39XXV6YXDFlcEynNkOSWDvM2nD_OyHi0d1Hvkmo/edit?usp=sharing",
+                          #timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                          #color=0x00ff00)
+    #await interaction.response.send_message(embed=embed)
 
 
 access_token = os.environ["BOT_TOKEN"]
