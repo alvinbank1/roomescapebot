@@ -141,4 +141,3 @@ async def self(interaction: discord.Interaction, string: str):
         await interaction.user.send("실행하지 말랬지")
         await interaction.user.kick()
 
-client.run('OTYwMDk2MTE3ODQyOTIzNTUz.GEoOv2.Y_kTDeRUTzC0hG2pu4hqahsPSgRn4M7mRBw1Qk')
