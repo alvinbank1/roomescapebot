@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import discord, datetime, pytz
+import discord, datetime, pytz, os
 from discord import app_commands
 
 class aclient(discord.Client):
@@ -141,3 +141,5 @@ async def self(interaction: discord.Interaction, string: str):
         await interaction.user.send("실행하지 말랬지")
         await interaction.user.kick()
 
+access_token = os.environ["BOT_TOKEN"]
+client.run(access_token)
