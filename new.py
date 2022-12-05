@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import discord, datetime, pytz, os
+import discord, datetime, pytz, asyncio
 from discord import app_commands
 
 class aclient(discord.Client):
@@ -16,6 +16,25 @@ class aclient(discord.Client):
 
 client = aclient()
 tree = app_commands.CommandTree(client)
+today = datetime.date.today()
+
+async def bt(games):
+    await client.wait_until_ready()
+    while not client.is_closed():
+        for g in games:
+            await client.change_presence(activity=discord.Streaming(name=g, url='https://www.twitch.tv/alvinbank1'))
+            await asyncio.sleep(5)
+
+@client.event
+async def on_ready():
+    y = today.year
+    m = today.month
+    d = today.day
+    print(client.user.id)
+    print("ready")
+    game = discord.Game(";?도움")
+    await bt(["/도움","DM = 문의","방탈출 서버 감시중 👀",str(y) + "년 " + str(m) + "월 " + str(d) + "일"])
+    #await client.change_presence(activity=discord.Streaming(name=";?도움", url='https://www.twitch.tv/alvinbank1'))
 
 @tree.command(name = "명령어", description= "명령어를 보여줍니다", guild=discord.Object(id=848128376643911700))
 async def self(interaction: discord.Interaction):
