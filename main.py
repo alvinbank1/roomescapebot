@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import discord, datetime, pytz, asyncio
+import discord, datetime, pytz, asyncio, openpyxl
 from discord import app_commands, DMChannel
 from discord.ui import Button, View
-
 
 class aclient(discord.Client):
     def __init__(self):
@@ -60,6 +59,8 @@ async def self(interaction: discord.Interaction):
     view = View()
     view.add_item(button1)
     await interaction.response.send_message(view=view,ephemeral=True)
+    # channel = client.get_channel(848132162972418079)
+    # await channel.send("@everyone",view=view)
 
 
 @tree.command(name="게임링크", description="한국인이 만든 방탈출 Roblox 게임 링크를 보여줍니다.", guild=discord.Object(id=848128376643911700))
@@ -127,7 +128,7 @@ async def self(interaction: discord.Interaction, user: discord.Member, reason: s
         embed = discord.Embed(title="당신은 한국인이 만든 방탈출 서버에서 영구적으로 밴 당했습니다!",
                               description="밴 반성/항소 : https://forms.gle/Ko9vMgLesJg4u4A38",
                               timestamp=datetime.datetime.now(pytz.timezone('UTC')),
-                              color=0x00ff00)
+                              color=0xff0000)
         embed.add_field(name="밴 담당자", value=interaction.user.mention, inline=True)
         embed.add_field(name="사유", value=reason, inline=True)
         await user.send(embed=embed)
@@ -154,7 +155,7 @@ async def self(interaction: discord.Interaction, user: discord.Member, reason: s
         embed = discord.Embed(title="당신은 한국인이 만든 방탈출 서버에서 킥 당했습니다!",
                               description="억울하다면 서버에 다시 접속해 주세요.",
                               timestamp=datetime.datetime.now(pytz.timezone('UTC')),
-                              color=0x00ff00)
+                              color=0xff0000)
         embed.add_field(name="킥 담당자", value=interaction.user.mention, inline=True)
         embed.add_field(name="사유", value=reason, inline=True)
         await user.send(embed=embed)
@@ -174,6 +175,95 @@ async def self(interaction: discord.Interaction, user: discord.Member, reason: s
     else:
         await interaction.response.send_message("당신은 관리자가 아닙니다!")
 
+@tree.command(name="경고", description="유저를 경고 합니다", guild=discord.Object(id=848128376643911700))
+async def self(interaction: discord.Interaction, user:discord.Member, reason:str):
+    if interaction.user.guild_permissions.administrator:
+        author = user
+        file = openpyxl.load_workbook("warning.xlsx")
+        sheet = file.active
+        i = 1
+        while True:
+            if sheet["A" + str(i)].value == str(user.id):
+                sheet["B" + str(i)].value = int(sheet["B" + str(i)].value) + 1
+                file.save("warning.xlsx")
+                if sheet["B" + str(i)].value > 2:
+                    try:
+                        embed = discord.Embed(title="당신은 한국인이 만든 방탈출 서버에서 영구적으로 밴 당했습니다!",
+                                              description="밴 반성/항소 : https://forms.gle/Ko9vMgLesJg4u4A38",
+                                              timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                                              color=0xff0000)
+                        embed.add_field(name="밴 담당자", value="<@960096117842923553> (자동 밴)", inline=True)
+                        embed.add_field(name="사유", value="경고 총 누적 3회", inline=True)
+                        await author.send(embed=embed)
+                    except:
+                        try:
+                            await user.ban(reason="경고 총 누적 3회")
+                        except:
+                            await interaction.response.send_message(user.mention + "님은 관리자 입니다!")
+                        else:
+                            await interaction.response.send_message("경고 3회 누적으로, " + user.mention + "님이 영구 밴당하셨습니다.")
+                            channel = client.get_channel(1007522175122669658)
+                            embed = discord.Embed(title=user.name + "님이 서버에서 영구적으로 밴당하셨습니다.",
+                                                  description=user.mention,
+                                                  timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                                                  color=0x00ff00)
+                            embed.add_field(name="밴 담당자", value="<@960096117842923553> (자동 밴)", inline=True)
+                            embed.add_field(name="사유", value="경고 총 누적 3회", inline=True)
+                            await channel.send(embed=embed)
+                    else:
+                        try:
+                            await user.ban(reason="경고 총 누적 3회")
+                        except:
+                            await interaction.response.send_message(user.mention + "님은 관리자 입니다!")
+                        else:
+                            await interaction.response.send_message(
+                                "경고 3회 누적으로," + user.name +"님이 영구 밴당하셨습니다.")
+                            channel = client.get_channel(1007522175122669658)
+                            embed = discord.Embed(title=user.name + "님이 서버에서 영구적으로 밴당하셨습니다.",
+                                                  description=user.mention,
+                                                  timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                                                  color=0x00ff00)
+                            embed.add_field(name="밴 담당자", value="<@960096117842923553> (자동 밴)", inline=True)
+                            embed.add_field(name="사유", value="경고 총 누적 3회", inline=True)
+                            await channel.send(embed=embed)
+                else:
+                    await interaction.response.send_message(user.mention + "님이 " + interaction.user.mention + " 님에게 경고를 1개 받았습니다.")
+                    embed = discord.Embed(title="당신은 한국인이 만든 방탈출 서버에서 경고를 받으셨습니다.",
+                                          description="현재 경고: " + str(sheet["B" + str(i)].value),
+                                          timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                                          color=0xff0000)
+                    embed.add_field(name="경고 담당자", value=interaction.user.mention, inline=True)
+                    embed.add_field(name="사유", value=reason, inline=True)
+                    await author.send(embed=embed)
+                    channel = client.get_channel(1007522175122669658)
+                    embed = discord.Embed(title=user.name + "님이 경고를 1개 받았습니다.",
+                                          description=user.mention,
+                                          timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x00ff00)
+                    embed.add_field(name="사유", value=reason, inline=True)
+                    embed.add_field(name="현재 경고", value=str(sheet["B" + str(i)].value), inline=True)
+                    await channel.send(embed=embed)
+                break
+            if sheet["A" + str(i)].value == None:
+                sheet["A" + str(i)].value = str(user.id)
+                sheet["B" + str(i)].value = 1
+                file.save("warning.xlsx")
+                await interaction.response.send_message(user.mention + "님이 " + interaction.user.mention + "님에게 경고를 1개 받았습니다.")
+                embed = discord.Embed(title="당신은 한국인이 만든 방탈출 서버에서 경고를 받으셨습니다.",
+                                      description="현재 경고: " + str(sheet["B" + str(i)].value),
+                                      timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                                      color=0xff0000)
+                embed.add_field(name="경고 담당자", value=interaction.user.mention, inline=True)
+                embed.add_field(name="사유", value=reason, inline=True)
+                embed.add_field(name="현재 경고", value=str(sheet["B" + str(i)].value), inline=True)
+                await author.send(embed=embed)
+                channel = client.get_channel(1007522175122669658)
+                embed = discord.Embed(title=user.name + "님이 경고를 1개 받았습니다.",
+                                      description=user.mention,
+                                      timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x00ff00)
+                embed.add_field(name="사유", value=reason, inline=True)
+                await channel.send(embed=embed)
+                break
+            i += 1
 
 @tree.command(name="developertestcommand", description="개발자 테스트 커맨드 입니다.", guild=discord.Object(id=848128376643911700))
 async def self(interaction: discord.Interaction, string: str, button: bool):
