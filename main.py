@@ -4,6 +4,74 @@ from discord import app_commands, DMChannel
 from discord.ui import Button, View
 from captcha.image import ImageCaptcha
 
+class commands(discord.ui.Select):
+    def __init__(self):
+        options=[
+            discord.SelectOption(label="기본 명령어", emoji="🤖", description="기본 명령어를 보여줍니다"),
+            discord.SelectOption(label="관리자 명령어", emoji="🛠", description="관리자 명령어를 보여줍니다"),
+            discord.SelectOption(label="소유자 명령어", emoji="🔨", description="소유자 명령어를 보여줍니다"),
+        ]
+        super().__init__(placeholder="명령어 카테고리를 선택하세요", max_values=1, min_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        user = interaction.user
+        guild = interaction.guild
+        if self.values[0] == "기본 명령어":
+            embed = discord.Embed(title="도움", description="명령어 목록을 봅니다",
+                                  timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                                  color=0x00a2ff)
+
+            embed.add_field(name="/명령어", value="명령어를 보여줍니다.", inline=False)
+            embed.add_field(name="/게임링크", value="한국인이 만든 방탈출 Roblox 게임 링크를 보여줍니다.", inline=False)
+            embed.add_field(name="/규칙", value="규칙을 봅니다.", inline=True)
+            embed.add_field(name="/피드백", value="방탈출 게임 피드백을 보냅니다", inline=True)
+            embed.add_field(name="/credit", value="크레딧을 보여줍니다", inline=True)
+            embed.set_footer(text="Codder : alvinbank1#5412",
+                             icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
+            embed.set_thumbnail(
+                url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
+            await interaction.response.edit_message(embed=embed, view=SelectViewCommands())
+        elif self.values[0] == "관리자 명령어":
+            if interaction.user.guild_permissions.manage_messages:
+                embed = discord.Embed(title="도움", description="명령어 목록을 봅니다",
+                                      timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                                      color=0x00a2ff)
+
+                embed.add_field(name="/경고", value="유저를 경고합니다", inline=False)
+                embed.add_field(name="/킥", value="유저를 킥합니다", inline=False)
+                embed.add_field(name="/밴", value="유저를 밴합니다", inline=True)
+                embed.add_field(name="/잠구기", value="채널을 잠급니다 (메세지 작성 불가)", inline=True)
+                embed.add_field(name="/잠금해제", value="채널 잠금을 해제합니다 (메세지 작성 가능)", inline=True)
+                embed.add_field(name="/잠구기", value="채널을 잠급니다 (메세지 작성 불가)", inline=True)
+                embed.add_field(name="/알림", value="유저에게 중요 알림을 보냅니다", inline=True)
+                embed.set_footer(text="Codder : alvinbank1#5412",
+                                 icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
+                embed.set_thumbnail(
+                    url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
+                await interaction.response.edit_message(embed=embed, view=SelectViewCommands())
+            else:
+                await interaction.response.send_message(":x: 당신은 관리자가 아닙니다!", ephemeral=True)
+        elif self.values[0] == "소유자 명령어":
+            if interaction.user.guild_permissions.administrator:
+                embed = discord.Embed(title="도움", description="명령어 목록을 봅니다",
+                                      timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                                      color=0x00a2ff)
+
+                embed.add_field(name="/developertestcommand", value="개발자용 테스트 명령어 입니다", inline=False)
+                embed.add_field(name="/셧다운", value="봇을 셧다운 합니다.", inline=False)
+                embed.set_footer(text="Codder : alvinbank1#5412",
+                                 icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
+                embed.set_thumbnail(
+                    url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
+                await interaction.response.edit_message(embed=embed, view=SelectViewCommands())
+            else:
+                await interaction.response.send_message(":x: 당신은 소유자가 아닙니다!", ephemeral=True)
+
+class SelectViewCommands(discord.ui.View):
+    def __init__(self, *, timeout=30):
+        super().__init__(timeout=timeout)
+        self.add_item(commands())
+
 class FeedbackModal(discord.ui.Modal, title="피드벡을 보내주세요"):
     fb_title = discord.ui.TextInput(
         style=discord.TextStyle.short,
@@ -62,7 +130,7 @@ class VerifyModal(discord.ui.Modal, title="인증을 완료해주세요"):
             embed = discord.Embed(title="인증", description="코드가 맞지 않습니다.",
                                   timestamp=datetime.datetime.now(pytz.timezone('UTC')),
                                   color=0xff0000)
-            await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
             channel = client.get_channel(873088054825463828)
             embed = discord.Embed(title="인증 로그", description=interaction.user.mention + "님이 인증에 실패하였습니다",
                                   timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0xff0000)
@@ -131,20 +199,32 @@ tree = app_commands.CommandTree(client)
 today = datetime.date.today()
 a = ""
 
+@tree.context_menu(name="알림 보내기", guild=discord.Object(id=848128376643911700))
+async def DM(interaction: discord.Interaction, message:discord.Message):
+    if interaction.user.guild_permissions.manage_messages:
+        noticemodal = NoticeModal()
+        noticemodal.user = message.author
+        await interaction.response.send_modal(noticemodal)
+    else:
+        await interaction.response.send_message(":x: 당신은 관리자가 아닙니다!")
+
+# Commands
 @tree.command(name="명령어", description="명령어를 보여줍니다", guild=discord.Object(id=848128376643911700))
 async def self(interaction: discord.Interaction):
-    embed = discord.Embed(title="도움", description="명령어 목록을 봅니다", timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+    embed = discord.Embed(title="도움", description="명령어 목록을 봅니다",
+                          timestamp=datetime.datetime.now(pytz.timezone('UTC')),
                           color=0x00a2ff)
 
     embed.add_field(name="/명령어", value="명령어를 보여줍니다.", inline=False)
     embed.add_field(name="/게임링크", value="한국인이 만든 방탈출 Roblox 게임 링크를 보여줍니다.", inline=False)
     embed.add_field(name="/규칙", value="규칙을 봅니다.", inline=True)
     embed.add_field(name="/피드백", value="방탈출 게임 피드백을 보냅니다", inline=True)
+    embed.add_field(name="/credit", value="크레딧을 보여줍니다", inline=True)
     embed.set_footer(text="Codder : alvinbank1#5412",
                      icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
     embed.set_thumbnail(
         url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
-    await interaction.response.send_message(embed=embed, ephemeral=True)
+    await interaction.response.send_message(view=SelectViewCommands(), embed=embed, ephemeral=True)
 
 
 @tree.command(name="규칙", description="규칙을 봅니다.", guild=discord.Object(id=848128376643911700))
@@ -211,7 +291,7 @@ async def self(interaction: discord.Interaction):
             view.add_item(button1)
             await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
     else:
-        await interaction.response.send_message("<#960454707120312350> 에서 이 명령어를 실행해 주세요!")
+        await interaction.response.send_message("<#960454707120312350> 에서 이 명령어를 실행해 주세요!", ephemeral=True)
 
 
 @tree.command(name="공지", description="공지를 작성합니다. (스테프만 가능)", guild=discord.Object(id=848128376643911700))
