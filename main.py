@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 import discord, datetime, pytz, asyncio, openpyxl, random
-from discord import app_commands, DMChannel
+from discord import app_commands, DMChannel, File
 from discord.ui import Button, View
 from captcha.image import ImageCaptcha
+from easy_pil import Editor, load_image_async, Font
 
 class commands(discord.ui.Select):
     def __init__(self):
         options=[
             discord.SelectOption(label="기본 명령어", emoji="🤖", description="기본 명령어를 보여줍니다"),
+            discord.SelectOption(label="특수 명령어", emoji="🔧", description="특수한 명령어를 보여줍니다"),
             discord.SelectOption(label="관리자 명령어", emoji="🛠", description="관리자 명령어를 보여줍니다"),
             discord.SelectOption(label="소유자 명령어", emoji="🔨", description="소유자 명령어를 보여줍니다"),
         ]
@@ -25,7 +27,19 @@ class commands(discord.ui.Select):
             embed.add_field(name="/게임링크", value="한국인이 만든 방탈출 Roblox 게임 링크를 보여줍니다.", inline=False)
             embed.add_field(name="/규칙", value="규칙을 봅니다.", inline=True)
             embed.add_field(name="/피드백", value="방탈출 게임 피드백을 보냅니다", inline=True)
+            embed.add_field(name="/내정보", value="자신의 정보를 보여줍니다", inline=True)
             embed.add_field(name="/credit", value="크레딧을 보여줍니다", inline=True)
+            embed.set_footer(text="Codder : alvinbank1#5412",
+                             icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
+            embed.set_thumbnail(
+                url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
+            await interaction.response.edit_message(embed=embed, view=SelectViewCommands())
+        elif self.values[0] == "특수 명령어":
+            embed = discord.Embed(title="도움", description="명령어 목록을 봅니다",
+                                  timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                                  color=0x00a2ff)
+
+            embed.add_field(name="/스테프신청", value="스테프 신청 인증을 합니다", inline=False)
             embed.set_footer(text="Codder : alvinbank1#5412",
                              icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
             embed.set_thumbnail(
@@ -179,10 +193,42 @@ class NoticeModal(discord.ui.Modal, title="유저에게 중요 알림을 보냅�
     async def on_error(self, interaction: discord.Interaction, error):
         await interaction.response.send_message(":x: 뭔가 잘못됐어요. 다시 시도해 주세요.\n만약 다시 시도했는데도 같은 오류가 발생한다면 문의해 주세요.")
 
+class AnnouncmentModal(discord.ui.Modal, title="유저에게 중요 알림을 보냅니다"):
+    message = discord.ui.TextInput(
+        style=discord.TextStyle.long,
+        label="메세지",
+        required=True,
+        max_length=2000,
+        placeholder="공지 내용을 입력해 주세요.",
+    )
+    async def on_submit(self, interaction: discord.Interaction):
+        notice = self.message
+        channel = client.get_channel(848128451890380821)
+        embed = discord.Embed(title="*한국인이 만든 방탈출 공지*",
+                              description="\n공지사항 내용은 항상 숙지 해주시기 바랍니다\n\n{}\n\n――――――――――――――――――――――――".format(notice),
+                              timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0xf24444)
+        embed.set_footer(text="Bot Made by. alvinbank1#5412 | 담당 관리자 : {}".format(interaction.user),
+                         icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
+        embed.set_thumbnail(
+            url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
+        commander = discord.utils.get(interaction.guild.roles, name="공지알림")
+        if self.important == True:
+            await channel.send("@everyone", embed=embed)
+        else:
+            await channel.send(commander.mention, embed=embed)
+        await interaction.user.send(
+            "*[ 한국인이 만든 방탈출 봇 ]* | 정상적으로 공지가 채널에 작성이 완료되었습니다.\n\n[ 기본 작성 설정 채널 ] : {}\n[ 공지 발신자 ] : {}\n\n[ 내용 ]\n{}".format(
+                channel, interaction.user, notice))
+        await interaction.response.send_message("공지가 작성되었습니다. ✅")
+    async def on_error(self, interaction: discord.Interaction, error):
+        await interaction.response.send_message(":x: 뭔가 잘못됐어요. 다시 시도해 주세요.\n만약 다시 시도했는데도 같은 오류가 발생한다면 문의해 주세요.")
+
 
 class aclient(discord.Client):
     def __init__(self):
-        super().__init__(intents=discord.Intents.default())
+        intents = discord.Intents.default()
+        intents.message_content = True
+        super().__init__(intents=intents)
         self.synced = False  # we use this so the bot doesn't sync commands more than once
 
     async def on_ready(self):
@@ -192,12 +238,36 @@ class aclient(discord.Client):
                 id=848128376643911700))  # guild specific: leave blank if global (global registration can take 1-24 hours)
             self.synced = True
         print(f"We have logged in as {self.user}.")
+        await client.get_channel(960443903251714068).send("리붓 완료 ✅")
 
 
 client = aclient()
 tree = app_commands.CommandTree(client)
 today = datetime.date.today()
 a = ""
+count = 1
+
+@client.event
+async def on_member_join(member):
+    background = Editor("black.png")
+    profile_image = await load_image_async(str(member.avatar.url))
+
+    profile = Editor(profile_image).resize((150,150)).circle_image()
+    poppins = Font.poppins(size=50, variant="bold")
+
+    poppins_small = Font.poppins(size=20, variant="light")
+
+    background.paste(profile, (325, 90))
+    background.ellipse((325, 90), 150, 150, outline="white",stroke_width=5)
+
+    background.text((400, 260), f"{member.guild.name}에 오신것을 환영합니다!", color="white", font=poppins, align="center")
+    background.text((400, 325), f"{member.name}#{member.discriminator}", color="white", font=poppins_small, align="center")
+
+    file = File(fp=background.image_bytes, filename="pic1.png")
+    guild = client.get_guild(848128376643911700)
+    channel = guild.get_channel(848417692939714570)
+    await channel.send(member.mention + "님, 한국인이 만든 방탈출에 오신것을 환영해요!\n먼저 <#848132162972418079>부터 읽도록 해요!", file=file)
+    await member.send(member.mention + "님, 한국인이 만든 방탈출에 오신것을 환영해요!\n먼저 <#848132162972418079>부터 읽도록 해요!", file=file)
 
 @tree.context_menu(name="알림 보내기", guild=discord.Object(id=848128376643911700))
 async def DM(interaction: discord.Interaction, message:discord.Message):
@@ -219,6 +289,7 @@ async def self(interaction: discord.Interaction):
     embed.add_field(name="/게임링크", value="한국인이 만든 방탈출 Roblox 게임 링크를 보여줍니다.", inline=False)
     embed.add_field(name="/규칙", value="규칙을 봅니다.", inline=True)
     embed.add_field(name="/피드백", value="방탈출 게임 피드백을 보냅니다", inline=True)
+    embed.add_field(name="/내정보", value="자신의 정보를 보여줍니다", inline=True)
     embed.add_field(name="/credit", value="크레딧을 보여줍니다", inline=True)
     embed.set_footer(text="Codder : alvinbank1#5412",
                      icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
@@ -236,6 +307,24 @@ async def self(interaction: discord.Interaction):
     # channel = client.get_channel(848132162972418079)
     # await channel.send("@everyone",view=view)
 
+@tree.command(name="내정보", description="내 정보를 보여줍니다", guild=discord.Object(id=848128376643911700))
+async def self(interaction: discord.Interaction):
+    background = Editor("black.png")
+    profile_image = await load_image_async(str(interaction.user.avatar.url))
+
+    profile = Editor(profile_image).resize((150, 150)).circle_image()
+    poppins = Font.poppins(size=50, variant="bold")
+
+    poppins_small = Font.poppins(size=20, variant="light")
+
+    background.paste(profile, (325, 90))
+    background.ellipse((325, 90), 150, 150, outline="white", stroke_width=5)
+
+    background.text((400, 260), f"{interaction.user.name}", color="white", font=poppins, align="center")
+    background.text((400, 325), f"{interaction.user.display_name}", color="white", font=poppins_small, align="center")
+    background.text((400, 350), f"{interaction.user.name}#{interaction.user.discriminator}", color="white", font=poppins_small,align="center")
+    file = File(fp=background.image_bytes, filename="pic1.png")
+    await interaction.response.send_message(file=file, ephemeral=True)
 
 @tree.command(name="게임링크", description="한국인이 만든 방탈출 Roblox 게임 링크를 보여줍니다.", guild=discord.Object(id=848128376643911700))
 async def self(interaction: discord.Interaction):
@@ -295,28 +384,14 @@ async def self(interaction: discord.Interaction):
 
 
 @tree.command(name="공지", description="공지를 작성합니다. (스테프만 가능)", guild=discord.Object(id=848128376643911700))
-async def self(interaction: discord.Interaction, content: str, important: bool):
+async def self(interaction: discord.Interaction, important: bool):
     await interaction.channel.purge(limit=1)
     i = (interaction.user.guild_permissions.manage_messages)
     if i is True:
-        notice = content
-        channel = client.get_channel(848128451890380821)
-        embed = discord.Embed(title="*한국인이 만든 방탈출 공지*",
-                              description="\n공지사항 내용은 항상 숙지 해주시기 바랍니다\n\n{}\n\n――――――――――――――――――――――――".format(notice),
-                              timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0xf24444)
-        embed.set_footer(text="Bot Made by. alvinbank1#5412 | 담당 관리자 : {}".format(interaction.user),
-                         icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
-        embed.set_thumbnail(
-            url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
-        commander = discord.utils.get(interaction.guild.roles, name="공지알림")
-        if important:
-            await channel.send("@everyone", embed=embed)
-        else:
-            await channel.send(commander.mention, embed=embed)
-        await interaction.user.send(
-            "*[ 한국인이 만든 방탈출 봇 ]* | 정상적으로 공지가 채널에 작성이 완료되었습니다.\n\n[ 기본 작성 설정 채널 ] : {}\n[ 공지 발신자 ] : {}\n\n[ 내용 ]\n{}".format(
-                channel, interaction.user, notice))
-        await interaction.response.send_message("공지가 작성되었습니다. ✅")
+        announcmentmodal = AnnouncmentModal()
+        announcmentmodal.interaction = interaction
+        announcmentmodal.important = important
+        await interaction.response.send_modal(announcmentmodal)
 
     if i is False:
         await interaction.response.send_message("{}, 당신은 관리자가 아닙니다".format(interaction.user.mention))
@@ -334,6 +409,25 @@ async def self(interaction: discord.Interaction, user: discord.Member, reason: s
         await user.send(embed=embed)
         try:
             await user.ban(reason=reason)
+        except:
+            await interaction.response.send_message(user.mention + "님은 관리자 입니다!")
+        else:
+            embed = discord.Embed(title=user.name + "님이 서버에서 영구적으로 밴당하셨습니다.",
+                                  description=user.mention,
+                                  timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                                  color=0x00ff00)
+            embed.add_field(name="밴 담당자", value=interaction.user.mention, inline=True)
+            embed.add_field(name="사유", value=reason, inline=True)
+            await client.get_channel(1007522175122669658).send(embed=embed)
+            await interaction.response.send_message(user.mention + "님을 밴 했습니다!")
+    else:
+        await interaction.response.send_message("당신은 관리자가 아닙니다!")
+
+@tree.command(name="언밴", description="유저의 밴을 풉니다.", guild=discord.Object(id=848128376643911700))
+async def self(interaction: discord.Interaction, user: discord.Member, reason: str):
+    if interaction.user.guild_permissions.manage_messages:
+        try:
+            await interaction.guild.unban(user=user,reason=reason)
         except:
             await interaction.response.send_message(user.mention + "님은 관리자 입니다!")
         else:
@@ -503,7 +597,10 @@ async def self(interaction: discord.Interaction, user: discord.Member):
 async def self(interaction: discord.Interaction):
     if interaction.user.guild_permissions.administrator:
         await interaction.response.send_message("봇을 끄는중 입니다.")
+        await client.get_channel(960443903251714068).send("봇을 셧다운(리붓) 합니다")
         print("셧다운중...")
+        await client.get_channel(872396858729832518).edit(topic="다음 숫자: 0 (봇이 꺼져있습니다)")
+        await client.get_channel(960443903251714068).send("셧다운 완료 ✅")
         await client.close()
     else:
         await interaction.response.send_message(":x: 당신은 소유자가 아닙니다!")
@@ -592,8 +689,30 @@ async def self(interaction: discord.Interaction, user:discord.Member, reason:str
     else:
         await interaction.response.send_message("올바르지 않은 채널입니다.")
 
+
 @client.event
 async def on_message(message):
+    global count
+    print(message.author.bot)
+    if message.author.bot == False:
+        if message.channel.id == 872396858729832518:
+            if message.content == str(count):
+                await message.channel.purge(limit=1)
+                await message.channel.send(message.author.mention + ": " + str(count))
+                await client.get_channel(872396858729832518).edit(topic="다음 숫자: " + str(count+1))
+                count += 1
+            else:
+                await message.channel.purge(limit=1)
+    if message.author != client.user:
+        print(message.author.name+": "+message.content)
+        log = client.get_channel(1078528911656357968)
+        embed = discord.Embed(title="메세지 전송 로그",
+                              description=message.author.mention,
+                              timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                              color=0x00f00)
+        embed.add_field(name="메세지", value=message.content, inline=True)
+        embed.add_field(name="메세지 링크", value="[메세지로 이동]("+message.jump_url+")", inline=True)
+        await log.send(embed=embed)
     empty_array = []
     modmail_channel = client.get_channel(961195825306951700)
     if message.author == client.user:
