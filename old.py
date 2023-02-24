@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# discord.py 2.0 미만
 import discord, random, datetime, pytz, openpyxl, asyncio, os
 from discord import DMChannel
 #from discord import app_commands,ui,utils
