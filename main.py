@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-import discord, datetime, pytz, asyncio, openpyxl, random
+import discord, datetime, pytz, asyncio, openpyxl, random, openai
 from discord import app_commands, DMChannel, File
 from discord.ui import Button, View
 from captcha.image import ImageCaptcha
-from easy_pil import Editor, load_image_async, Font
+#from easy_pil import Editor, load_image_async, Font
 
 class commands(discord.ui.Select):
     def __init__(self):
@@ -246,6 +246,7 @@ tree = app_commands.CommandTree(client)
 today = datetime.date.today()
 a = ""
 count = 1
+openai.api_key = 'YOUR_API_KEY_HERE'
 
 @client.event
 async def on_member_join(member):
@@ -689,6 +690,24 @@ async def self(interaction: discord.Interaction, user:discord.Member, reason:str
     else:
         await interaction.response.send_message("올바르지 않은 채널입니다.")
 
+@tree.command(name="chat-gpt", description="챗 GPT 명령어입니다!", guild=discord.Object(id=848128376643911700))
+async def self(interaction: discord.Interaction, message: str):
+    id = client.get_channel(interaction.channel_id)
+    qu=interaction.user.name
+    await interaction.response.send_message("서버에서 데이터를 가져오는 중 입니다.\n잠시만 기다려 주세요!",ephemeral=True)
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role":"user","content":message}
+        ]
+    )
+    print(response["choices"][0].message["content"])
+    embed = discord.Embed(title="Chat GPT 대답", description="버전: Chat GPT 3.5",
+                          timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x93C54B)
+    embed.add_field(name="질문", value=message, inline=True)
+    embed.add_field(name="답변", value=response["choices"][0].message["content"], inline=True)
+    embed.add_field(name="질문자", value=qu, inline=True)
+    await id.send(embed=embed)
 
 @client.event
 async def on_message(message):
@@ -792,4 +811,4 @@ async def on_message(message):
             await member_object.send(embed=embed)
 
 
-client.run(input('Input token: '))
+client.run('YOUR_TOKEN_HERE')
