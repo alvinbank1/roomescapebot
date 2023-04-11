@@ -246,7 +246,7 @@ tree = app_commands.CommandTree(client)
 today = datetime.date.today()
 a = ""
 count = 1
-openai.api_key = 'YOUR_API_KEY_HERE'
+openai.api_key = 'YOUR_KEY_HERE'
 
 @client.event
 async def on_member_join(member):
@@ -692,9 +692,7 @@ async def self(interaction: discord.Interaction, user:discord.Member, reason:str
 
 @tree.command(name="chat-gpt", description="챗 GPT 명령어입니다!", guild=discord.Object(id=848128376643911700))
 async def self(interaction: discord.Interaction, message: str):
-    id = client.get_channel(interaction.channel_id)
-    qu=interaction.user.name
-    await interaction.response.send_message("서버에서 데이터를 가져오는 중 입니다.\n잠시만 기다려 주세요!",ephemeral=True)
+    await interaction.response.send_message("서버에서 데이터를 가져오는 중 입니다.\n잠시만 기다려 주세요!",ephemeral=False)
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -702,12 +700,11 @@ async def self(interaction: discord.Interaction, message: str):
         ]
     )
     print(response["choices"][0].message["content"])
-    embed = discord.Embed(title="Chat GPT 대답", description="버전: Chat GPT 3.5",
+    embed = discord.Embed(title="Chat GPT 대답", description="Q. " + message,
                           timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x93C54B)
-    embed.add_field(name="질문", value=message, inline=True)
     embed.add_field(name="답변", value=response["choices"][0].message["content"], inline=True)
-    embed.add_field(name="질문자", value=qu, inline=True)
-    await id.send(embed=embed)
+    await interaction.edit_original_response(embed=embed, content="")
+    #await id.send(embed=embed)
 
 @client.event
 async def on_message(message):
@@ -811,4 +808,4 @@ async def on_message(message):
             await member_object.send(embed=embed)
 
 
-client.run('YOUR_TOKEN_HERE')
+client.run('YOUR_KEY_HERE')
