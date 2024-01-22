@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-import discord, datetime, pytz, asyncio, openpyxl, random, openai
+import discord, datetime, pytz, asyncio, openpyxl, random, openai, googletrans
 from discord import app_commands, DMChannel, File
 from discord.ui import Button, View
 from captcha.image import ImageCaptcha
 #from easy_pil import Editor, load_image_async, Font
+
+discord_token = "Your_Token_Here"
+openai_token = "Your_Token_Here"
 
 class commands(discord.ui.Select):
     def __init__(self):
@@ -30,6 +33,7 @@ class commands(discord.ui.Select):
             #embed.add_field(name="/내정보", value="자신의 정보를 보여줍니다", inline=True)
             embed.add_field(name="/chat-gpt", value="챗 GPT에게 물어보세요!", inline=True)
             embed.add_field(name="/credit", value="크레딧을 보여줍니다", inline=True)
+            embed.add_field(name="/translate", value="문장을 번역합니다", inline=True)
             embed.set_footer(text="Codder : alvinbank1#5412",
                              icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
             embed.set_thumbnail(
@@ -126,11 +130,11 @@ class VerifyModal(discord.ui.Modal, title="인증을 완료해주세요"):
     async def on_submit(self, interaction: discord.Interaction):
         if self.code.value == a:
             await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name='BotVerifyed'))
-            embed = discord.Embed(title="인증", description="인증이 완료되었습니다 ✅ <#857501980834529292>로 가주세요!",
+            embed = discord.Embed(title="인증", description="인증이 완료되었습니다 ✅ <#1133316065649238028>로 가주세요!",
                                   timestamp=datetime.datetime.now(pytz.timezone('UTC')),
                                   color=0x93C54B)
             await interaction.response.send_message(embed=embed, ephemeral=True)
-            embed = discord.Embed(title="인증", description="인증이 완료되었습니다 ✅ <#857501980834529292>로 가주세요!",
+            embed = discord.Embed(title="인증", description="인증이 완료되었습니다 ✅ <#1133316065649238028>로 가주세요!",
                                   timestamp=datetime.datetime.now(pytz.timezone('UTC')),
                                   color=0x93C54B)
             await interaction.user.send(embed=embed)
@@ -247,7 +251,7 @@ tree = app_commands.CommandTree(client)
 today = datetime.date.today()
 a = ""
 count = 1
-openai.api_key = 'YOUR_KEY_HERE'
+openai.api_key = openai_token
 
 # @client.event
 # async def on_member_join(member):
@@ -694,12 +698,15 @@ async def self(interaction: discord.Interaction, user:discord.Member, reason:str
 @tree.command(name="chat-gpt", description="챗 GPT 명령어입니다!", guild=discord.Object(id=848128376643911700))
 async def self(interaction: discord.Interaction, message: str):
     await interaction.response.send_message("서버에서 데이터를 가져오는 중 입니다.\n잠시만 기다려 주세요!",ephemeral=False)
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role":"user","content":message}
-        ]
-    )
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "user", "content": message}
+            ]
+        )
+    except:
+        await interaction.edit_original_response(content=":x: 죄송하지만 Chat GPT 답변 생성중 오류가 발생하였습니다.")
     print(response["choices"][0].message["content"])
     embed = discord.Embed(title="Chat GPT 대답", description="Q. " + message,
                           timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x93C54B)
@@ -708,28 +715,43 @@ async def self(interaction: discord.Interaction, message: str):
     #await id.send(embed=embed)
 
 @tree.command(name="지원결과", description="지원서 결과를 보냅니다.", guild=discord.Object(id=848128376643911700))
-async def self(interaction: discord.Interaction, user:discord.Member,name: str,result: bool, feedback: str):
+async def self(interaction: discord.Interaction, user:discord.Member,name: str,password: str):
     await interaction.response.send_message("결과 전송중...", ephemeral=True)
     embed = discord.Embed(title=name + " 지원 결과 안내", description="지원하신 " + name + "의 결과를 안내드립니다.",
                           timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x93C54B)
-    if result == True:
-        embed.add_field(name="결과", value="지원 결과는 합격입니다.")
-        embed.add_field(name="피드백", value=feedback)
-        embed.set_footer(text="지원해 주셔서 감사합니다. 곧 DM이 올 것이니, DM을 켜두시기 바랍니다.",
-                         icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
-    else:
-        embed.add_field(name="결과", value="지원 결과는 불합격입니다.")
-        embed.add_field(name="피드백", value=feedback)
-        embed.set_footer(text="지원해 주셔서 감사합니다. 다음에 다시 지원해주시기 바랍니다.",
-                         icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
+    embed.add_field(name="결과 보기", value="https://roomescape.imweb.me/")
+    embed.add_field(name="게시글 비밀번호", value=password)
+    embed.set_footer(text="지원해 주셔서 감사합니다.",
+                     icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
     await user.send(embed=embed)
     await interaction.edit_original_response(content="결과 전송이 완료되었습니다!")
+
+@tree.command(name="translate", description="Translate", guild=discord.Object(id=848128376643911700))
+async def self(interaction: discord.Interaction, message:str, languagecode:str):
+    await interaction.response.send_message("잠시만 기다려주세요. (Please wait...)",ephemeral=True)
+    translator = googletrans.Translator(service_urls=['translate.googleapis.com'])
+    try:
+        string = translator.translate(message,dest=languagecode)
+        embed = discord.Embed(title="번역 결과", description="Translate Result",
+                              timestamp=datetime.datetime.now(pytz.timezone('UTC')), color=0x93C54B)
+        embed.add_field(name="메세지 / Message", value=message)
+        embed.add_field(name="번역 결과 / Translate Result", value=string.text)
+        embed.add_field(name="발음 / pronunciation", value=string.pronunciation)
+        embed.set_footer(text="Translated By Google Translator",
+                         icon_url="https://cdn.discordapp.com/avatars/855015531584290877/04ba95df55ff875d171c0fbc82e62aaa.png?size=256")
+        await interaction.edit_original_response(content="", embed=embed)
+    except:
+        await interaction.edit_original_response(content="오류: 언어 코드가 올바르지 않거나 번역 API에 문제가 있습니다.\nError: Language code is not correct or API has problom.")
 
 @client.event
 async def on_message(message):
     global count
     print(message.author.bot)
     if message.author.bot == False:
+        if message.channel.id == 960454707120312350:
+            await message.delete()
+        if message.channel.id == 1198830547716288642:
+            await message.delete()
         if message.channel.id == 872396858729832518:
             if message.content == str(count):
                 await message.channel.purge(limit=1)
@@ -827,4 +849,4 @@ async def on_message(message):
             await member_object.send(embed=embed)
 
 
-client.run('YOUR_TOKEN_HERE')
+client.run(discord_token)
